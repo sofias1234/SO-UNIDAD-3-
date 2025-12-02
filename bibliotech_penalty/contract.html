@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h5>Contrato Inteligente / Registro Algorand</h5>
+<p class="text-muted">Aquí puedes registrar préstamos y multas como metadatos on-chain (testnet).</p>
+
+<h6 class="mt-3">Multas pendientes</h6>
+<ul class="list-group mb-3">
+  {% for f in fines %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>${{ f.amount }} — {{ f.loan.book.title }}</span>
+      <div>
+        {% if f.onchain_txid %}<small class="text-muted me-2">tx: {{ f.onchain_txid }}</small>{% endif %}
+        {% if not f.paid %}
+          <a class="btn btn-sm btn-primary" href="{% url 'pay_fine' f.id %}">Registrar pago</a>
+        {% else %}
+          <span class="badge bg-success">Pagada</span>
+        {% endif %}
+      </div>
+    </li>
+  {% empty %}
+    <li class="list-group-item">No hay multas pendientes.</li>
+  {% endfor %}
+</ul>
+
+<h6>Préstamos</h6>
+<ul class="list-group">
+  {% for loan in loans %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ loan.book.title }} — {{ loan.get_status_display }}</span>
+      <span>{% if loan.onchain_txid %}<small class="text-muted">tx: {{ loan.onchain_txid }}</small>{% else %}No registrado{% endif %}</span>
+    </li>
+  {% empty %}
+    <li class="list-group-item">Sin préstamos.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
+

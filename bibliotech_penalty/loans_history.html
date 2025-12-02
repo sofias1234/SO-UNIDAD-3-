@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h5>Historial de {{ student.name }}</h5>
+<div class="row">
+  <div class="col-md-7">
+    <h6>Préstamos</h6>
+    <ul class="list-group">
+      {% for loan in loans %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>{{ loan.book.title }} — {{ loan.get_status_display }} ({{ loan.start_date|date:"d M Y" }} → {{ loan.due_date|date:"d M Y" }})</span>
+          {% if loan.onchain_txid %}<small class="text-muted">tx: {{ loan.onchain_txid }}</small>{% endif %}
+        </li>
+      {% empty %}
+        <li class="list-group-item">Sin préstamos.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-5">
+    <h6>Multas</h6>
+    <ul class="list-group">
+      {% for f in fines %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>${{ f.amount }} — {{ f.loan.book.title }}</span>
+          <span class="badge {% if f.paid %}bg-success{% else %}bg-warning text-dark{% endif %}">
+            {% if f.paid %}Pagada{% else %}Pendiente{% endif %}
+          </span>
+        </li>
+      {% empty %}
+        <li class="list-group-item">Sin multas.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+

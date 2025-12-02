@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BibliotechPenalty — Detalles</title>
+  <style>
+    :root{
+      --bg:#f6f8fa; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a4;
+      --mono: "SFMono-Regular", Menlo, Monaco, "Roboto Mono", monospace;
+    }
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:linear-gradient(180deg, #f3f7f9, var(--bg));
+      color:#0f172a; padding:32px;
+      display:flex; align-items:center; justify-content:center; min-height:100vh;
+    }
+    .container{ width:100%; max-width:760px; }
+    .card{
+      background:var(--card); border-radius:12px; padding:20px 22px; box-shadow: 0 6px 20px rgba(15,23,42,0.06);
+      margin-bottom:18px;
+    }
+    h1{ font-size:20px; margin:0 0 8px 0; }
+    p.muted{ margin:0; color:var(--muted); font-size:13px; }
+    dl{ display:grid; grid-template-columns:140px 1fr; gap:10px 18px; margin-top:14px; align-items:start; }
+    dt{ font-weight:600; color:#0f172a; }
+    dd{ margin:0; color:#0b1220; word-break:break-all; }
+    .json-block{
+      background:#0b1220; color:#e6f2f1; padding:14px; border-radius:8px; font-family:var(--mono);
+      font-size:13px; overflow:auto; max-height:260px;
+    }
+    .meta-row{ display:flex; gap:10px; align-items:center; margin-top:12px; }
+    .badge{ background:rgba(14,165,164,0.12); color:var(--accent); padding:6px 10px; border-radius:999px; font-weight:600; font-size:13px; }
+    footer{ margin-top:10px; color:var(--muted); font-size:13px; text-align:right; }
+    @media (max-width:520px){ dl{ grid-template-columns:120px 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" role="region" aria-label="Detalles del contrato">
+      <h1>Detalles — <span id="contractName">BibliotechPenalty</span></h1>
+      <p class="muted">Información del contrato desplegado (JSON convertido a vista legible).</p>
+
+      <div class="meta-row">
+        <div class="badge">Contrato</div>
+        <div class="muted" id="networkLabel">Red: http://127.0.0.1:8545</div>
+      </div>
+
+      <dl>
+        <dt>Nombre</dt><dd id="name">BibliotechPenalty</dd>
+        <dt>Dirección</dt><dd id="address">0xBD9aEf474a64296880cBcc871f6161e7175e0E66</dd>
+        <dt>Red</dt><dd id="network">http://127.0.0.1:8545</dd>
+        <dt>Desplegado (UTC)</dt><dd id="deployedUtc">2025-11-27T04:29:27.938666+00:00</dd>
+        <dt>Desplegado (navegador)</dt><dd id="deployedLocal">—</dd>
+      </dl>
+
+      <div style="margin-top:14px;">
+        <strong>JSON original (formateado):</strong>
+        <pre class="json-block" id="jsonBlock"></pre>
+      </div>
+
+      <footer>Copiar y pegar este HTML en un archivo .html para compartirlo o incrustarlo.</footer>
+    </div>
+  </div>
+
+  <script>
+    // Datos originales (puedes editarlos aquí si los recibes dinámicamente)
+    const data = {
+      "nombre": "BibliotechPenalty",
+      "dirección": "0xBD9aEf474a64296880cBcc871f6161e7175e0E66",
+      "red": "http://127.0.0.1:8545",
+      "desplegado_en": "2025-11-27T04:29:27.938666+00:00"
+    };
+
+    // Rellenar el HTML con los valores
+    document.getElementById('contractName').textContent = data.nombre;
+    document.getElementById('name').textContent = data.nombre;
+    document.getElementById('address').textContent = data['dirección'];
+    document.getElementById('network').textContent = data.red;
+    document.getElementById('deployedUtc').textContent = data.desplegado_en;
+    document.getElementById('networkLabel').textContent = 'Red: ' + data.red;
+
+    // Mostrar JSON bonito
+    document.getElementById('jsonBlock').textContent = JSON.stringify(data, null, 2);
+
+    // Convertir ISO a fecha legible en zona del navegador + mostrar zona
+    (function(){
+      try {
+        // Normalizar la cadena ISO para Date
+        const iso = data.desplegado_en;
+        // Algunas implementaciones no aceptan el +00:00 sufijo directo con milisegundos largos — Date lo maneja bien en la mayoría de navegadores modernos.
+        const date = new Date(iso);
+        if (isNaN(date.getTime())) {
+          document.getElementById('deployedLocal').textContent = 'Fecha inválida en el formato proporcionado.';
+          return;
+        }
+
+        // Opciones de formato
+        const options = {
+          year:'numeric', month:'long', day:'2-digit',
+          hour:'2-digit', minute:'2-digit', second:'2-digit',
+          hour12:false, timeZoneName:'short'
+        };
+
+        // Fecha en la configuración regional del navegador
+        const localStr = date.toLocaleString(undefined, options);
+        // Fecha en UTC
+        const utcStr = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleString('en-GB', {...options, timeZone:'UTC'});
+
+        document.getElementById('deployedLocal').textContent = `${localStr} (navegador) — UTC: ${utcStr}`;
+      } catch (err) {
+        document.getElementById('deployedLocal').textContent = 'No se pudo convertir la fecha: ' + err.message;
+      }
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h5>{{ student.name }} (Estudiante)</h5>
+<div class="row g-3 my-2">
+  <div class="col-md-4">
+    <div class="card"><div class="card-body">
+      <div class="fw-bold">Total Activos:</div>
+      <div class="fs-4">{{ summary.total_activos }}</div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card"><div class="card-body">
+      <div class="fw-bold">Préstamos Vencidos:</div>
+      <div class="fs-4">{{ summary.prestamos_vencidos }}</div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card"><div class="card-body">
+      <div class="fw-bold">Multas Pendientes:</div>
+      <div class="fs-4">${{ summary.multas_pendientes|floatformat:2 }}</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="list-group mt-3">
+  {% for loan in loans %}
+  <div class="list-group-item">
+    <div class="d-flex justify-content-between">
+      <div>
+        <div class="fw-bold">{{ loan.book.title }}</div>
+        <small>Estudiante: {{ loan.student.name }} • ID: {{ loan.student.student_id }}</small><br>
+        <small>Fecha de préstamo: {{ loan.start_date|date:"d M Y" }}</small><br>
+        <small>Fecha límite: {{ loan.due_date|date:"d M Y" }}</small>
+        {% if loan.is_overdue %}
+          <div class="text-danger">Préstamo vencido hace {{ loan.days_overdue }} días</div>
+        {% endif %}
+        {% if loan.onchain_txid %}
+          <div class="text-muted">Registro on-chain: {{ loan.onchain_txid }}</div>
+        {% endif %}
+      </div>
+      <div class="text-end">
+        <span class="badge {% if loan.status == 'activo' %}bg-success{% elif loan.status == 'vencido' %}bg-danger{% else %}bg-secondary{% endif %}">
+          {{ loan.get_status_display }}
+        </span>
+        <div class="mt-2">
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'register_loan' loan.id %}">Registrar en Algorand</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <div class="alert alert-info">No hay préstamos.</div>
+  {% endfor %}
+</div>
+{% endblock %}
+
